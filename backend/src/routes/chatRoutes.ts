@@ -6,7 +6,10 @@ const router = Router();
 
 router.use(protectRoute);
 
+// Kullanıcının mevcut sohbetlerini listele
 router.get("/", getChats);
+
+// Belirli bir kullanıcı ile sohbet başlat veya var olanı getir
 router.post("/with/:participantId", getOrCreateChat);
 
 export default router;
