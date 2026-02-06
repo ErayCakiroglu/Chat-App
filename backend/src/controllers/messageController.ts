@@ -8,6 +8,7 @@ export async function getMessages(req: AuthRequest, res: Response, next: NextFun
         const userId = req.userId;
         const { chatId } = req.params;
 
+        // Sohbetin varlığını ve kullanıcının bu sohbete dahil olup olmadığını kontrol et
         const chat = await Chat.findOne({
             _id: chatId,
             participants: userId
@@ -18,6 +19,7 @@ export async function getMessages(req: AuthRequest, res: Response, next: NextFun
             return;
         }
 
+        // Mesajları getir ve gönderen bilgilerini (isim, avatar vb.) doldur
         const messages = await Message.find({ chat: chatId }).populate("sender", "name email avatar").sort({ createdAt: 1 });
         res.json(messages);
     } catch (error) {
