@@ -5,19 +5,21 @@ import { Message } from "../models/Message";
 import { User } from "../models/User";
 import { Chat } from "../models/Chat";
 
-interface SocketWithUserId extends Socket {
-    userId: string;
-}
 
+// Çevrimiçi kullanıcıları takip etmek için Map (userId -> socketId)
 export const onlineUsers: Map<string, string> = new Map();
 
 export const initializeSocket = (httpServer: HttpServer) => {
+    // İzin verilen kökenleri (origins) belirle
     const allowedOrigins = ["http://localhost:8081",
         "http://localhost:5173",
-        process.env.FRONTEND_URL as string
-    ]
+        process.env.FRONTEND_URL
+    ].filter(Boolean) as string[];
+
+    // Socket.io sunucusunu başlat ve CORS ayarlarını yap
     const io = new SocketServer(httpServer, { cors: { origin: allowedOrigins } });
 
+    // Kimlik doğrulama middleware'i
     io.use(async (socket, next) => {
         const token = socket.handshake.auth.token;
         if (!token) return next(new Error("Authentication error"));
@@ -25,11 +27,12 @@ export const initializeSocket = (httpServer: HttpServer) => {
         try {
             const session = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY as string });
 
+            // Clerk ID ile veritabanından kullanıcıyı bul
             const clerkId = session.sub;
             const user = await User.findOne({ clerkId });
             if (!user) return next(new Error("User not found."));
 
-            (socket as SocketWithUserId).userId = user._id.toString();
+            socket.data.userId = user._id.toString();
             next();
         } catch (error) {
             next(new Error(error as string));
@@ -37,23 +40,31 @@ export const initializeSocket = (httpServer: HttpServer) => {
     });
 
     io.on("connection", (socket) => {
-        const userId = (socket as SocketWithUserId).userId;
+        const userId = socket.data.userId;
+
+        // Yeni bağlanan kullanıcıya mevcut çevrimiçi kullanıcıları gönder
         socket.emit("online-users", { userIds: Array.from(onlineUsers.keys()) });
 
+        // Kullanıcıyı çevrimiçi listesine ekle
         onlineUsers.set(userId, socket.id);
 
+        // Diğer kullanıcılara bu kullanıcının çevrimiçi olduğunu bildir
         socket.broadcast.emit("user-online", { userId });
 
+        // Kullanıcıya özel odaya katıl (bildirimler vs. için)
         socket.join(`user:${userId}`);
 
+        // Sohbet odasına katılma
         socket.on("join-chat", (chatId: string) => {
             socket.join(`chat:${chatId}`);
         });
 
+        // Sohbet odasından ayrılma
         socket.on("leave-chat", (chatId: string) => {
             socket.leave(`chat:${chatId}`);
         });
 
+        // Mesaj gönderme işlemi
         socket.on("send-message", async (data: { chatId: string, text: string }) => {
             try {
                 const { chatId, text } = data;
@@ -67,20 +78,25 @@ export const initializeSocket = (httpServer: HttpServer) => {
                     return;
                 }
 
+                // Mesajı veritabanına kaydet
                 const message = await Message.create({
                     text,
                     sender: userId,
                     chat: chatId
                 });
 
+                // Sohbetin son mesajını güncelle
                 chat.lastMessage = message._id;
                 chat.lastMessageAt = new Date();
                 await chat.save();
 
-                await message.populate("sender", "name email avatar");
+                // Gönderen bilgilerini doldur
+                await message.populate("sender", "name avatar");
 
+                // Mesajı sohbet odasındaki herkese gönder
                 io.to(`chat:${chatId}`).emit("new-message", message);
 
+                // Ayrıca katılımcıların kendi odalarına da gönder (bildirim için)
                 for (const participantId of chat.participants) {
                     io.to(`user:${participantId}`).emit("new-message", message);
                 }
@@ -90,11 +106,15 @@ export const initializeSocket = (httpServer: HttpServer) => {
             }
         });
 
+        // Yazıyor etkinliği (İsteğe bağlı eklenebilir)
         socket.on("typing", async (data) => {
-            socket.on("disconnect", () => {
-                onlineUsers.delete(userId);
-                socket.broadcast.emit("user-offline", { userId });
-            });
+            // socket.to(`chat:${data.chatId}`).emit("typing", { userId, chatId: data.chatId });
+        });
+
+        // Bağlantı kopma durumu
+        socket.on("disconnect", () => {
+            onlineUsers.delete(userId);
+            socket.broadcast.emit("user-offline", { userId });
         });
 
     });
