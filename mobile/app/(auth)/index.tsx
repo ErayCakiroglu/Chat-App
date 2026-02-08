@@ -9,6 +9,7 @@ const { width, height } = Dimensions.get('window');
 const AuthScreen = () => {
 
     const { handleSocialAuth, loadingStrategy } = useAuthSocial();
+    const isLoading = loadingStrategy !== null;
 
     return (
         <View className="flex-1 bg-surface-dark">
@@ -37,8 +38,10 @@ const AuthScreen = () => {
 
                     <View className="flex-row gap-4 mt-10">
                         <Pressable className="flex-1 flex-row items-center justify-center gap-2 border border-white py-4 rounded-3xl active:scale-[0.97]"
-                            disabled={loadingStrategy === "oauth_google"}
-                            onPress={() => handleSocialAuth("oauth_google")}>
+                            disabled={isLoading}
+                            accessibilityRole="button"
+                            accessibilityLabel="Continue With Google"
+                            onPress={() => !isLoading && handleSocialAuth("oauth_google")}>
                             {loadingStrategy === "oauth_google" ? (<ActivityIndicator size="small" color="#AAAAAA" />) : (
                                 <>
                                     <Image source={require("../../assets/images/google.png")}
@@ -49,8 +52,10 @@ const AuthScreen = () => {
                             )}
                         </Pressable>
                         <Pressable className="flex-1 flex-row items-center justify-center gap-2 border border-white py-4 rounded-3xl active:scale-[0.97]"
-                            disabled={loadingStrategy === "oath_apple"}
-                            onPress={() => handleSocialAuth("oauth_apple")}>
+                            disabled={isLoading}
+                            accessibilityRole="button"
+                            accessibilityLabel="Continue With Apple"
+                            onPress={() => !isLoading && handleSocialAuth("oauth_apple")}>
                             {loadingStrategy === "oauth_apple" ? (<ActivityIndicator size="small" color="#AAAAAA" />) : (
                                 <>
                                     <Ionicons name="logo-apple" size={20} color="#FFFFFF"></Ionicons>
