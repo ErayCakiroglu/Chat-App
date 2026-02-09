@@ -8,7 +8,7 @@ const TabsLayout = () => {
 
     if (!isLoaded) return null;
 
-    if (!isSignedIn) return <Redirect href={"/(auth)"}></Redirect>
+    if (!isSignedIn) return <Redirect href={"/(auth)"} />
 
     return (
         <Tabs

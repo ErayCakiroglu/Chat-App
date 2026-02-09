@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-expo";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
-const API_URL = "http://192.168.1.15:3000";
+const API_URL = "http://192.168.1.15:3000/api";
 
+// Temel Axios istemcisini oluştur
 const api = axios.create({
     baseURL: API_URL,
     headers: {
@@ -11,21 +12,21 @@ const api = axios.create({
     }
 });
 
+// Kimlik doğrulama gerektiren istekler için özel hook
 export const useApi = () => {
     const { getToken } = useAuth();
 
-    useEffect(() => {
-        const requestInterceptor = api.interceptors.request.use(async (config) => {
+    const apiWithAuth = useCallback(
+        async <T>(config: Parameters<typeof api.request>[0]) => {
+            // Clerk'ten güncel token'ı al
             const token = await getToken();
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-            return config
-        })
+            // İsteğe Authorization header'ını ekle
+            return api.request<T>({
+                ...config,
+                headers: { ...config.headers, ...(token && { Authorization: `Bearer ${token}` }) }
+            });
+        }, [getToken]
+    );
 
-        return () => {
-            api.interceptors.request.eject(requestInterceptor);
-        }
-    }, [getToken]);
-    return api;
+    return { api, apiWithAuth };
 }
