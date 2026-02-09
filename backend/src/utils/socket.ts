@@ -13,6 +13,7 @@ export const initializeSocket = (httpServer: HttpServer) => {
     // İzin verilen kökenleri (origins) belirle
     const allowedOrigins = ["http://localhost:8081",
         "http://localhost:5173",
+        "http://192.168.1.15:8081",
         process.env.FRONTEND_URL
     ].filter(Boolean) as string[];
 
