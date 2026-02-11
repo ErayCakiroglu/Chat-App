@@ -108,8 +108,26 @@ export const initializeSocket = (httpServer: HttpServer) => {
         });
 
         // Yazıyor etkinliği (İsteğe bağlı eklenebilir)
-        socket.on("typing", async (data) => {
-            // socket.to(`chat:${data.chatId}`).emit("typing", { userId, chatId: data.chatId });
+        socket.on("typing", async (data: { chatId: string; isTyping: boolean }) => {
+            const typingPayload = {
+                userId,
+                chatId: data.chatId,
+                isTyping: data.isTyping
+            }
+
+            socket.to(`chat:${data.chatId}`).emit("typing", typingPayload);
+
+            try {
+                const chat = await Chat.findById(data.chatId);
+                if (chat) {
+                    const otherParticipantId = chat.participants.find((p: any) => p.toString() !== userId);
+                    if (otherParticipantId) {
+                        socket.to(`user:${otherParticipantId}`).emit("typing", typingPayload);
+                    }
+                }
+            } catch (error) {
+
+            }
         });
 
         // Bağlantı kopma durumu

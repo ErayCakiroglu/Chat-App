@@ -2,13 +2,16 @@ import { Chat } from "@/types";
 import { Image } from "expo-image";
 import { Pressable, View, Text } from "react-native";
 import { formatDistanceToNow } from "date-fns";
+import { useSocketStore } from "@/lib/socket";
 
 const ChatItem = ({ chat, onPress }: { chat: Chat, onPress: () => void }) => {
     // Sohbetin diğer katılımcısını al
+    const { onlineUsers, typingUsers, unreadChats } = useSocketStore();
+
     const participant = chat.participant;
-    const isOnline = true;
-    const isTyping = false;
-    const hasUnread = false;
+    const isOnline = onlineUsers.has(participant._id);
+    const isTyping = typingUsers.get(chat._id) === participant._id;
+    const hasUnread = unreadChats.has(chat._id);
 
     return (
         // Sohbet öğesine tıklandığında detay sayfasına git
