@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 
 
+// Kullanıcı giriş yaptığında backend ile veritabanı senkronizasyonunu sağlayan bileşen
 const AuthSync = () => {
     const { isSignedIn } = useAuth();
     const { user } = useUser();
@@ -10,6 +11,7 @@ const AuthSync = () => {
     const hasSynced = useRef(false);
 
     useEffect(() => {
+        // Kullanıcı giriş yapmışsa ve henüz senkronize edilmemişse sync işlemini başlat
         if (isSignedIn && user && !hasSynced.current) {
             hasSynced.current = true;
             syncUser(undefined, {
