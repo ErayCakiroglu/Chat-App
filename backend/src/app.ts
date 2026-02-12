@@ -5,18 +5,36 @@ import messageRoutes from "./routes/messageRoutes";
 import userRoutes from "./routes/userRoutes";
 import { clerkMiddleware } from "@clerk/express";
 import { errorHandler } from "./middleware/errorHandler";
+import cors from "cors";
+
 
 const app = express();
 
+// İzin verilen origin listesi (Frontend ve localhost)
+const allowedOrigins = [
+    "http://localhost:8081",
+    "http://localhost:5173",
+    process.env.FRONTEND_URL!,
+].filter(Boolean);
+
+// CORS yapılandırması
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+}));
+
+// JSON body parser
 app.use(express.json());
 
+// Clerk kimlik doğrulama middleware'i
 app.use(clerkMiddleware());
 
-
+// Sağlık kontrolü endpoint'i
 app.get("/health", (req, res) => {
-    res.json({ status: "ok", message: "Server is runnig." });
+    res.json({ status: "ok", message: "Server is running." });
 });
 
+// API rotaları
 app.use("/api/auth", authRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
