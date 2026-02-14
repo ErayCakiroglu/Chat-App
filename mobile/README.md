@@ -1,50 +1,53 @@
-# Welcome to your Expo app 👋
+# Whisper Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Whisper uygulamasının mobil versiyonu. React Native kullanılarak iOS ve Android platformları için geliştirilmiştir.
 
-## Get started
+## 🛠 Kullanılan Teknolojiler
 
-1. Install dependencies
+- **Framework:** React Native (Expo veya CLI)
+- **Authentication:** Clerk (React Native SDK)
+- **Real-time:** Socket.io Client
+- **Styling:** NativeWind / StyleSheet
+- **Navigation:** React Navigation
 
-   ```bash
-   npm install
-   ```
+## 🚀 Kurulum
 
-2. Start the app
+### 1. Ön Hazırlık
 
-   ```bash
-   npx expo start
-   ```
+- Node.js yüklü olmalıdır.
+- iOS için Xcode (Mac gerektirir), Android için Android Studio yüklü olmalıdır.
+- Eğer Expo kullanılıyorsa `Expo Go` uygulaması telefonunuzda yüklü olmalıdır.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 2. Bağımlılıkları Yükleyin
 
 ```bash
-npm run reset-project
+npm install
+# veya
+yarn install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Çevresel Değişkenler
 
-## Learn more
+Proje kök dizininde `.env` dosyasını yapılandırın:
 
-To learn more about developing your project with Expo, look at the following resources:
+```env
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+EXPO_PUBLIC_API_URL=http://<BILGISAYAR_IP_ADRESINIZ>:3000/api
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+*Not: Mobil cihazda test ederken `localhost` yerine bilgisayarınızın yerel IP adresini kullanmanız gerekir.*
 
-## Join the community
+### 4. Uygulamayı Başlatın
 
-Join our community of developers creating universal apps.
+```bash
+npx expo start
+# veya CLI kullanıyorsanız
+npm run android
+# npm run ios
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📱 Test Etme
+
+- **Fiziksel Cihaz:** QR kodu taratarak (Expo) veya USB ile bağlayarak.
+- **Emülatör:** Android Studio veya Xcode simülatörleri üzerinden.
+```

@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import api from "../lib/axios";
 
-// Kullanıcıyı backend ile senkronize eden hook
+/** Kullanıcıyı backend ile senkronize eden hook */
 function useUserSync() {
     const { isSignedIn, getToken } = useAuth();
 

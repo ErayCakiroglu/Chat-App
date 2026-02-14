@@ -1,16 +1,55 @@
-# React + Vite
+# Whisper Web Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Whisper uygulamasının web arayüzü. React ve Vite ile geliştirilmiş modern, hızlı ve responsive bir sohbet uygulamasıdır.
 
-Currently, two official plugins are available:
+## 🛠 Kullanılan Teknolojiler
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Core:** React, Vite
+- **Styling:** Tailwind CSS, DaisyUI
+- **State Management:** Zustand
+- **Data Fetching:** TanStack Query (React Query)
+- **Authentication:** Clerk (@clerk/clerk-react)
+- **Real-time:** Socket.io Client
+- **Icons:** Lucide React
 
-## React Compiler
+## 🚀 Kurulum
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Bağımlılıkları Yükleyin
 
-## Expanding the ESLint configuration
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2. Çevresel Değişkenleri Ayarlayın (.env)
+
+Ana dizinde bir `.env` dosyası oluşturun:
+
+```env
+VITE_CLERK_PUBLISHABLE_KEY=<YOUR_CLERK_PUBLISHABLE_KEY>
+VITE_API_URL=<YOUR_DEPLOYED_API_URL>
+```
+
+*Not: Socket bağlantısı için `lib/socket.js` dosyasındaki IP/URL yapılandırmasını kontrol etmeyi unutmayın.*
+
+### 3. Uygulamayı Başlatın
+
+```bash
+npm run dev
+```
+
+Uygulama genellikle `http://localhost:5173` adresinde çalışacaktır.
+
+## 📂 Proje Yapısı
+
+- `/src/components`: UI bileşenleri (ChatHeader, MessageBubble vb.)
+- `/src/hooks`: Custom hook'lar (useChats, useSocketConnection vb.)
+- `/src/lib`: Yardımcı fonksiyonlar ve yapılandırmalar (axios, socket store)
+- `/src/pages`: Sayfa düzenleri
+
+## ✨ Özellikler
+
+- Gerçek zamanlı mesajlaşma
+- Çevrimiçi/Çevrimdışı durum takibi
+- Yazıyor (Typing) göstergesi
+- Kullanıcı arama ve yeni sohbet başlatma
+```
